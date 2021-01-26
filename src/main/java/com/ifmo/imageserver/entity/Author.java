@@ -1,5 +1,13 @@
 package com.ifmo.imageserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.ifmo.imageserver.exceptions.AuthorException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -7,6 +15,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,6 +23,7 @@ import java.util.Objects;
  * Entity class to define Author class in DB
  */
 @Entity
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @NoArgsConstructor
 @Table(name = "author")
 public class Author extends BaseIdentify {
@@ -43,6 +53,8 @@ public class Author extends BaseIdentify {
      * Field birthdate of Author
      */
     @Getter
+    @JsonSerialize(using = LocalDateSerializer.class)
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate birthDate;
 
     /**
@@ -62,10 +74,13 @@ public class Author extends BaseIdentify {
     /**
      * Field images of this Author
      */
+    //@JsonBackReference
+    @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Getter
     @Setter
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
-    private List<Image> images;
+    private List<Image> images = new ArrayList<>();
 
     public Author(String nickname) {
         setNickname(nickname);
@@ -73,6 +88,7 @@ public class Author extends BaseIdentify {
 
     /**
      * Method for set Author name. Must be 3 or more characters
+     *
      * @param name name of images Author
      */
     public void setName(String name) {
@@ -89,6 +105,7 @@ public class Author extends BaseIdentify {
 
     /**
      * Method for set Author surname. Must be 3 or more characters
+     *
      * @param surname surname of images Author
      */
     public void setSurname(String surname) {
@@ -99,6 +116,7 @@ public class Author extends BaseIdentify {
 
     /**
      * Method for set Author birthdate. Age must be from 3 to 120
+     *
      * @param date birthdate of Author
      */
     public void setBirthdate(LocalDate date) {
@@ -109,6 +127,7 @@ public class Author extends BaseIdentify {
 
     /**
      * Method for set Author country. Must be 3 or more characters
+     *
      * @param country country where Author lives
      */
     public void setCountry(String country) {
@@ -119,6 +138,7 @@ public class Author extends BaseIdentify {
 
     /**
      * Method for set Author city. Must be 3 or more characters
+     *
      * @param city city were Author lives
      */
     public void setCity(String city) {
@@ -129,6 +149,7 @@ public class Author extends BaseIdentify {
 
     /**
      * Method add Image to images of Author. Check is Image is null
+     *
      * @param image image which Author made
      */
     public void addImage(Image image) {

@@ -1,5 +1,13 @@
 package com.ifmo.imageserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.ifmo.imageserver.exceptions.ImageException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +18,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @NoArgsConstructor
 @Table(name = "additionalimageinfo")
 public class AdditionalImageInfo extends BaseIdentify {
@@ -32,12 +41,17 @@ public class AdditionalImageInfo extends BaseIdentify {
      * Field of date where image was made
      */
     @Getter
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime date;
 
     /**
      * List of images with this info
      */
     @Getter
+    //@JsonBackReference
+    @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @OneToMany(mappedBy = "info", fetch = FetchType.LAZY)
     private List<Image> images;
 

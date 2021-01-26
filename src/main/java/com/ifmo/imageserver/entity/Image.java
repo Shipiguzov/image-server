@@ -1,9 +1,12 @@
 package com.ifmo.imageserver.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ifmo.imageserver.exceptions.ImageException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -12,6 +15,7 @@ import java.util.Objects;
  * Entity class to define Image class in DB
  */
 @Entity
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @NoArgsConstructor
 @Table(name = "image")
 public class Image extends BaseIdentify {
@@ -19,6 +23,9 @@ public class Image extends BaseIdentify {
     /**
      * Field of Author who made this Image
      */
+    //@JsonManagedReference
+    @JsonIgnore
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     private Author author;
@@ -27,6 +34,8 @@ public class Image extends BaseIdentify {
      * Field of additional image info (like date, country etc)
      */
     @Getter
+    @JsonManagedReference
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
     private AdditionalImageInfo info;
 
@@ -44,6 +53,13 @@ public class Image extends BaseIdentify {
     @Getter
     @Column(length = 100)
     private String userFileName;
+
+    /**
+     * Field of image file in byte array
+     */
+    @Getter
+    @Transient
+    private byte[] byteArray;
 
     public Image(String userFileName, Author author) {
         setUserFileName(userFileName);
@@ -64,6 +80,7 @@ public class Image extends BaseIdentify {
 
     /**
      * Method set AdditionalImageInfo for Image
+     *
      * @param info additional image info (like city, country etc.)
      */
     public void setAdditionalImageInfo(AdditionalImageInfo info) {
@@ -87,8 +104,13 @@ public class Image extends BaseIdentify {
      * @param userFileName user file name
      */
     public void setUserFileName(String userFileName) {
-        if (Objects.isNull(userFileName) || userFileName.length() < 5 || !userFileName.contains("\\."))
+        if (Objects.isNull(userFileName) || userFileName.length() < 5 || !userFileName.contains("."))
             throw new ImageException("File name must be 5 or more characters");
         this.userFileName = userFileName;
+    }
+
+    public void setByteArray(byte[] array) {
+        if (array.length == 0) throw new ImageException("Byte array is empty");
+        this.byteArray = array;
     }
 }

@@ -69,7 +69,7 @@ public class ImageService {
     }
 
     public Image getByFileName(String fileName) {
-        if (Objects.isNull(fileName) || !fileName.contains("\\."))
+        if (Objects.isNull(fileName) || !fileName.contains("."))
             throw new ImageException("Illegal fileName in getByFileName request");
         Optional<Image> result = repository.findOne(ImageSpecification.findByUserFileName(fileName));
         return result.get();

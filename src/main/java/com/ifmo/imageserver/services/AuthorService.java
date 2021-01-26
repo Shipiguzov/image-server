@@ -48,9 +48,9 @@ public class AuthorService {
         return author;
     }
 
-    public Page<Author> getByPage(int page, int size, Specification<Author> specification) {
+    public Page<Author> getByPage(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Author> authorPage = repository.findAll(specification, pageable);
+        Page<Author> authorPage = repository.findAll(pageable);
         if (authorPage.isEmpty()) throw new AuthorException("There is no author in DB");
         return authorPage;
     }
