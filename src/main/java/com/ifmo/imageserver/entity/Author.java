@@ -1,9 +1,6 @@
 package com.ifmo.imageserver.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
@@ -24,6 +21,7 @@ import java.util.Objects;
  */
 @Entity
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Long.class)
 @NoArgsConstructor
 @Table(name = "author")
 public class Author extends BaseIdentify {
@@ -74,8 +72,7 @@ public class Author extends BaseIdentify {
     /**
      * Field images of this Author
      */
-    //@JsonBackReference
-    @JsonIgnore
+    //@JsonIgnore
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Getter
     @Setter

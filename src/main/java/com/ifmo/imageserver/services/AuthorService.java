@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -29,21 +28,20 @@ public class AuthorService {
     }
 
     public Author add(Author author) {
-        if (repository.existsById(author.getId()) ||
-                author.getNickname().equalsIgnoreCase(
-                        repository.findOne(AuthorSpecification.findByNickname(
-                                author.getNickname())).get().getNickname()))
+        if (repository.findOne(AuthorSpecification.findByNickname(author.getNickname())).isPresent())
             throw new AuthorException("Author with this nickname already exist");
         return repository.save(author);
     }
 
     public Author update(Author author) {
-        if (!repository.existsById(author.getId())) throw new AuthorException("Author not found in update request");
+        if (repository.findOne(AuthorSpecification.findByNickname(author.getNickname())).isPresent())
+            throw new AuthorException("Author not found in update request");
         return repository.save(author);
     }
 
     public Author delete(Author author) {
-        if (!repository.existsById(author.getId())) throw new AuthorException("Author not found in update request");
+        if (repository.findOne(AuthorSpecification.findByNickname(author.getNickname())).isPresent())
+            throw new AuthorException("Author not found in update request");
         repository.delete(author);
         return author;
     }
@@ -62,7 +60,8 @@ public class AuthorService {
     }
 
     public Iterable<Author> getByCity(String city) {
-        if (Objects.isNull(city) || city.length() < 3) throw new AuthorException("Author's city is null in getByCity request");
+        if (Objects.isNull(city) || city.length() < 3)
+            throw new AuthorException("Author's city is null in getByCity request");
         return repository.findAll(AuthorSpecification.findByCity(city));
     }
 

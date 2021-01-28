@@ -1,14 +1,17 @@
 package com.ifmo.imageserver.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.ifmo.imageserver.exceptions.ImageException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -16,6 +19,7 @@ import java.util.Objects;
  */
 @Entity
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Long.class)
 @NoArgsConstructor
 @Table(name = "image")
 public class Image extends BaseIdentify {
@@ -23,21 +27,34 @@ public class Image extends BaseIdentify {
     /**
      * Field of Author who made this Image
      */
-    //@JsonManagedReference
-    @JsonIgnore
+//    @JsonManagedReference
+//    @JsonIgnore
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     private Author author;
 
     /**
-     * Field of additional image info (like date, country etc)
+     * Field of city where image was made
      */
     @Getter
-    @JsonManagedReference
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @ManyToOne(fetch = FetchType.LAZY)
-    private AdditionalImageInfo info;
+    @Column(length = 100)
+    private String city;
+
+    /**
+     * Field of country where image was made
+     */
+    @Getter
+    @Column(length = 100)
+    private String country;
+
+    /**
+     * Field of date where image was made
+     */
+    @Getter
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime date;
 
     /**
      * Field of file name of this Image. How it named on server.
@@ -58,6 +75,7 @@ public class Image extends BaseIdentify {
      * Field of image file in byte array
      */
     @Getter
+    @Setter
     @Transient
     private byte[] byteArray;
 
@@ -79,13 +97,33 @@ public class Image extends BaseIdentify {
     }
 
     /**
-     * Method set AdditionalImageInfo for Image
-     *
-     * @param info additional image info (like city, country etc.)
+     * Method to set city where image was made
+     * @param city city where image was made
      */
-    public void setAdditionalImageInfo(AdditionalImageInfo info) {
-        if (Objects.isNull(info)) throw new ImageException("Additional image info is null");
-        this.info = info;
+    public void setCity(String city) {
+        if (Objects.isNull(city) || city.length() < 3)
+            throw new ImageException("City must be 3 or more characters");
+        this.city = city;
+    }
+
+    /**
+     * Method to set country where image was made
+     * @param country country where image was made
+     */
+    public void setCountry(String country) {
+        if (Objects.isNull(country) || country.length() < 3)
+            throw new ImageException("Country must be 3 or more characters");
+        this.country = country;
+    }
+
+    /**
+     * Method to set date when image was made
+     * @param date date when image was made
+     */
+    public void setDate(LocalDateTime date) {
+        if (date.isAfter(LocalDateTime.now()))
+            throw new ImageException("Date is in the future");
+        this.date = date;
     }
 
     /**
@@ -107,10 +145,5 @@ public class Image extends BaseIdentify {
         if (Objects.isNull(userFileName) || userFileName.length() < 5 || !userFileName.contains("."))
             throw new ImageException("File name must be 5 or more characters");
         this.userFileName = userFileName;
-    }
-
-    public void setByteArray(byte[] array) {
-        if (array.length == 0) throw new ImageException("Byte array is empty");
-        this.byteArray = array;
     }
 }

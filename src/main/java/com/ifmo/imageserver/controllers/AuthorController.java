@@ -19,6 +19,7 @@ public class AuthorController {
 
     @PostMapping("/add")
     public Author addAuthorToDB(@RequestBody Author author) {
+        System.out.println(author.getNickname());
         return service.add(author);
     }
 

@@ -4,6 +4,7 @@ import com.ifmo.imageserver.entity.Author;
 import com.ifmo.imageserver.entity.Image;
 import com.ifmo.imageserver.exceptions.ImageException;
 import com.ifmo.imageserver.repository.ImageRepository;
+import com.ifmo.imageserver.specification.AuthorSpecification;
 import com.ifmo.imageserver.specification.ImageSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -31,19 +32,19 @@ public class ImageService {
     }
 
     public Image add(Image image) {
-        if (repository.existsById(image.getId()))
+        if (repository.findOne(ImageSpecification.findByFileName(image.getFileName())).isPresent())
             throw new ImageException("Image for add is already exist");
         return repository.save(image);
     }
 
     public Image update(Image image) {
-        if (!repository.existsById(image.getId()))
+        if (repository.findOne(ImageSpecification.findByFileName(image.getFileName())).isPresent())
             throw new ImageException("Image for update is not exist");
         return repository.save(image);
     }
 
     public Image delete(Image image) {
-        if (!repository.existsById(image.getId()))
+        if (repository.findOne(ImageSpecification.findByFileName(image.getFileName())).isPresent())
             throw new ImageException("Image for delete is not exist");
         repository.delete(image);
         return image;
