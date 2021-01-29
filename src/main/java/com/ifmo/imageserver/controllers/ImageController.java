@@ -3,6 +3,7 @@ package com.ifmo.imageserver.controllers;
 import com.ifmo.imageserver.FileWork;
 import com.ifmo.imageserver.entity.Author;
 import com.ifmo.imageserver.entity.Image;
+import com.ifmo.imageserver.services.AuthorService;
 import com.ifmo.imageserver.services.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -17,7 +18,7 @@ public class ImageController {
     private ImageService service;
 
     @Autowired
-    public ImageController(ImageService service) {
+    public ImageController(ImageService service, AuthorService authorService) {
         this.service = service;
     }
 
@@ -30,14 +31,16 @@ public class ImageController {
 
     @PutMapping("/update")
     public Image updateImageInDB(@RequestBody Image image) {
-        FileWork.saveImageToDisk(image);
-        return service.update(image);
+        Image resultImage = service.update(image);
+        FileWork.saveImageToDisk(resultImage);
+        return resultImage;
     }
 
     @DeleteMapping("/delete")
     public Image deleteImageFromDB(@RequestBody Image image) {
-        FileWork.deleteImageFromDisk(image);
-        return service.delete(image);
+        Image resultImage = service.delete(image);
+        FileWork.deleteImageFromDisk(resultImage);
+        return resultImage;
     }
 
     @GetMapping
@@ -53,12 +56,12 @@ public class ImageController {
     }
 
     @GetMapping("/author")
-    public Iterable<Image> getByAuthorFromDB(@RequestParam Author author) {
+    public Iterable<Image> getByAuthorFromDB(@RequestBody Author author) {
         return service.getByAuthor(author);
     }
 
     @GetMapping("/byFileName")
-    public Image getByFileNameFromDB(@RequestParam String fileName) {
+    public Iterable<Image> getByFileNameFromDB(@RequestParam String fileName) {
         return service.getByFileName(fileName);
     }
 

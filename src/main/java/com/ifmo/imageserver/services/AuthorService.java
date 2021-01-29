@@ -4,6 +4,7 @@ import com.ifmo.imageserver.entity.Author;
 import com.ifmo.imageserver.exceptions.AuthorException;
 import com.ifmo.imageserver.repository.AuthorRepository;
 import com.ifmo.imageserver.specification.AuthorSpecification;
+import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,22 +29,26 @@ public class AuthorService {
     }
 
     public Author add(Author author) {
-        if (repository.findOne(AuthorSpecification.findByNickname(author.getNickname())).isPresent())
+        if (Objects.isNull(author) ||
+                repository.findOne(AuthorSpecification.findByNickname(author.getNickname())).isPresent())
             throw new AuthorException("Author with this nickname already exist");
         return repository.save(author);
     }
 
     public Author update(Author author) {
-        if (repository.findOne(AuthorSpecification.findByNickname(author.getNickname())).isPresent())
+        if (Objects.isNull(author) ||
+                !repository.findOne(AuthorSpecification.findByNickname(author.getNickname())).isPresent())
             throw new AuthorException("Author not found in update request");
         return repository.save(author);
     }
 
     public Author delete(Author author) {
-        if (repository.findOne(AuthorSpecification.findByNickname(author.getNickname())).isPresent())
+        if (Objects.isNull(author) ||
+                !repository.findOne(AuthorSpecification.findByNickname(author.getNickname())).isPresent())
             throw new AuthorException("Author not found in update request");
-        repository.delete(author);
-        return author;
+        Author returnAuthor = repository.findOne(AuthorSpecification.findByNickname(author.getNickname())).get();
+        repository.delete(returnAuthor);
+        return returnAuthor;
     }
 
     public Page<Author> getByPage(int page, int size) {
@@ -69,6 +74,10 @@ public class AuthorService {
         if (Objects.isNull(country) || country.length() < 3)
             throw new AuthorException("Author's country is null in getByCountry request");
         return repository.findAll(AuthorSpecification.findByCountry(country));
+    }
+
+    public Author getByID(long id) {
+        return repository.findById(id).get();
     }
 
     // TODO: Finish methods with age

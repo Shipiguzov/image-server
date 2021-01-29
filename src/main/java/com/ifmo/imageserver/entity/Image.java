@@ -19,7 +19,7 @@ import java.util.Objects;
  */
 @Entity
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Long.class)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id", scope = Long.class)
 @NoArgsConstructor
 @Table(name = "image")
 public class Image extends BaseIdentify {
@@ -27,12 +27,16 @@ public class Image extends BaseIdentify {
     /**
      * Field of Author who made this Image
      */
-//    @JsonManagedReference
-//    @JsonIgnore
+    @JsonBackReference
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Getter
     @ManyToOne(fetch = FetchType.LAZY)
     private Author author;
+
+    @Getter
+    @Setter
+    @Transient
+    private long authorID;
 
     /**
      * Field of city where image was made
@@ -83,6 +87,7 @@ public class Image extends BaseIdentify {
         setUserFileName(userFileName);
         setAuthor(author);
         setFileName();
+        authorID = author.getId();
     }
 
     /**

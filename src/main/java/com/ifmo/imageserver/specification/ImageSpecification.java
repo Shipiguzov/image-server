@@ -5,9 +5,7 @@ import com.ifmo.imageserver.entity.Author_;
 import com.ifmo.imageserver.entity.Image_;
 import org.springframework.data.jpa.domain.Specification;
 
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.*;
 import java.time.LocalDateTime;
 
 public class ImageSpecification {
@@ -32,9 +30,7 @@ public class ImageSpecification {
     }
 
     public static Specification<Image> findByCity(String city) {
-        return (root, query, criteriaBuilder) -> {
-            return criteriaBuilder.equal(root.get(Image_.city), city);
-        };
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get(Image_.city), city);
     }
 
     public static Specification<Image> findByCountry(String country) {

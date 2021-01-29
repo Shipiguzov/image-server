@@ -1,13 +1,8 @@
 package com.ifmo.imageserver.specification;
 
-import com.ifmo.imageserver.entity.AdditionalImageInfo_;
 import com.ifmo.imageserver.entity.Author;
 import com.ifmo.imageserver.entity.Author_;
 import org.springframework.data.jpa.domain.Specification;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.Predicate;
-import java.time.LocalDate;
 
 public class AuthorSpecification {
 

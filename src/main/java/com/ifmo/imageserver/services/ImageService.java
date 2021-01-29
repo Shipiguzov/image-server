@@ -3,8 +3,8 @@ package com.ifmo.imageserver.services;
 import com.ifmo.imageserver.entity.Author;
 import com.ifmo.imageserver.entity.Image;
 import com.ifmo.imageserver.exceptions.ImageException;
+import com.ifmo.imageserver.repository.AuthorRepository;
 import com.ifmo.imageserver.repository.ImageRepository;
-import com.ifmo.imageserver.specification.AuthorSpecification;
 import com.ifmo.imageserver.specification.ImageSpecification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,34 +20,50 @@ import java.util.Optional;
 public class ImageService {
 
     private ImageRepository repository;
+    private AuthorRepository authorRepository;
 
     @Autowired
-    public ImageService(ImageRepository repository) {
-        setRepository(repository);
-    }
-
-    private void setRepository(ImageRepository repository) {
-        if (Objects.isNull(repository)) throw new ImageException("Image repository is null");
+    public ImageService(ImageRepository repository, AuthorRepository authorRepository) {
         this.repository = repository;
+        this.authorRepository = authorRepository;
     }
 
     public Image add(Image image) {
         if (repository.findOne(ImageSpecification.findByFileName(image.getFileName())).isPresent())
             throw new ImageException("Image for add is already exist");
-        return repository.save(image);
+        if (authorRepository.existsById(image.getAuthorID())) {
+            Author author = authorRepository.findById(image.getAuthorID()).get();
+            image.setAuthor(author);
+            author.addImage(image);
+            authorRepository.save(author);
+            return repository.save(image);
+        }
+        image.setAuthorID(-1L);
+        return image;
     }
 
     public Image update(Image image) {
-        if (repository.findOne(ImageSpecification.findByFileName(image.getFileName())).isPresent())
+        if (!repository.findOne(ImageSpecification.findByFileName(image.getFileName())).isPresent())
             throw new ImageException("Image for update is not exist");
+        Image resultImage = repository.findOne(ImageSpecification.findByFileName(image.getFileName())).get();
+        image.setAuthor(authorRepository.findById(image.getAuthorID()).get());
+        Author author = authorRepository.findById(image.getAuthorID()).get();
+        author.removeImage(resultImage);
+        author.addImage(image);
+        authorRepository.save(author);
+        repository.delete(resultImage);
         return repository.save(image);
     }
 
     public Image delete(Image image) {
-        if (repository.findOne(ImageSpecification.findByFileName(image.getFileName())).isPresent())
+        if (!repository.findOne(ImageSpecification.findByFileName(image.getFileName())).isPresent())
             throw new ImageException("Image for delete is not exist");
-        repository.delete(image);
-        return image;
+        Image resultImage = repository.findOne(ImageSpecification.findByFileName(image.getFileName())).get();
+        Author author = authorRepository.findById(resultImage.getAuthor().getId()).get();
+        author.removeImage(resultImage);
+        authorRepository.save(author);
+        repository.delete(resultImage);
+        return resultImage;
     }
 
     public Page<Image> getByPage(int page, int size) {
@@ -69,11 +85,11 @@ public class ImageService {
         return repository.findAll(ImageSpecification.findByAuthor(author));
     }
 
-    public Image getByFileName(String fileName) {
+    public Iterable<Image> getByFileName(String fileName) {
         if (Objects.isNull(fileName) || !fileName.contains("."))
             throw new ImageException("Illegal fileName in getByFileName request");
-        Optional<Image> result = repository.findOne(ImageSpecification.findByUserFileName(fileName));
-        return result.get();
+        Iterable<Image> result = repository.findAll(ImageSpecification.findByUserFileName(fileName));
+        return result;
     }
 
     public Iterable<Image> getByCity(String city) {

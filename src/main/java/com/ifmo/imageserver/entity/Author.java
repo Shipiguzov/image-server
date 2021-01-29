@@ -72,8 +72,7 @@ public class Author extends BaseIdentify {
     /**
      * Field images of this Author
      */
-    //@JsonIgnore
-    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+    //@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @Getter
     @Setter
     @OneToMany(mappedBy = "author", fetch = FetchType.LAZY)
@@ -152,5 +151,15 @@ public class Author extends BaseIdentify {
     public void addImage(Image image) {
         if (Objects.isNull(image)) throw new AuthorException("Image is null");
         this.images.add(image);
+    }
+
+    public void removeImage(Image image) {
+        if (Objects.isNull(image)) throw new AuthorException("Image is null");
+        for (Image image1 : images) {
+            if (image.getFileName().equals(image1.getFileName())) {
+                images.remove(image1);
+                break;
+            }
+        }
     }
 }

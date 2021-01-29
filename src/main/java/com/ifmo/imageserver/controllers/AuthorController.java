@@ -42,16 +42,19 @@ public class AuthorController {
 
     @GetMapping("/nickname")
     public Author getAuthorByNicknameFromDB(@RequestParam String nickname) {
+        System.out.println(nickname);
         return service.getByNickname(nickname);
     }
 
     @GetMapping("/city")
     public Iterable<Author> getAuthorByCityFromDB(@RequestParam String city) {
+        System.out.println(city);
         return service.getByCity(city);
     }
 
     @GetMapping("/country")
     public Iterable<Author> getAuthorByCountryFromDB(@RequestParam String country) {
+        System.out.println(country);
         return service.getByCountry(country);
     }
 }
