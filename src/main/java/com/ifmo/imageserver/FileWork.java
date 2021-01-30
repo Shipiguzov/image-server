@@ -4,11 +4,22 @@ import com.ifmo.imageserver.entity.Image;
 
 import java.io.*;
 
-
+/**
+ * Class for work with files on server
+ */
 public class FileWork {
 
+    /**
+     * Path where images will be stored
+     */
+    private final static String pathOnServer = "C:\\images\\";
+
+    /**
+     * Save image byte array (which have a image file) to disk
+     * @param image which must be saved
+     */
     public static void saveImageToDisk(Image image) {
-        File imageFile = new File("C:\\images\\" + image.getFileName());
+        File imageFile = new File(pathOnServer + image.getFileName());
         try (FileOutputStream fileOutputStream = new FileOutputStream(imageFile)) {
             fileOutputStream.write(image.getByteArray());
         } catch (FileNotFoundException e) {
@@ -18,9 +29,14 @@ public class FileWork {
         }
     }
 
+    /**
+     * Read image byte array of necessary Image class from disk
+     * @param image which we want to get byte array from file
+     * @return byte array which consist necessary file of image
+     */
     public static byte[] readImageFromDisk(Image image) {
         byte[] bytes = new byte[3];
-        File imageFile = new File("C:\\images\\" + image.getFileName());
+        File imageFile = new File(pathOnServer + image.getFileName());
         try (FileInputStream fileInputStream = new FileInputStream(imageFile);
         ByteArrayOutputStream byteArrayInputStream = new ByteArrayOutputStream()) {
             int data;
@@ -35,8 +51,12 @@ public class FileWork {
         return bytes;
     }
 
+    /**
+     * Delete image file from disk
+     * @param image which byte array file will be deleted
+     */
     public static void deleteImageFromDisk(Image image) {
-        File file = new File("c:\\images\\" + image.getFileName());
+        File file = new File(pathOnServer + image.getFileName());
         file.delete();
     }
 }

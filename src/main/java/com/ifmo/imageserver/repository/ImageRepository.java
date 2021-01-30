@@ -4,6 +4,9 @@ import com.ifmo.imageserver.entity.Image;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+/**
+ * Interface for work with Image repository. Take necessary information from DB using image specifications.
+ */
 public interface ImageRepository extends PagingAndSortingRepository<Image, Long>, JpaSpecificationExecutor<Image> {
 
 //    @Query("SELECT c FROM image c WHERE UPPER(c.userFilename) = UPPER(:userFileName)")

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Entity class to define Image class in DB
+ * Entity class to define Image class in DB.
  */
 @Entity
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)

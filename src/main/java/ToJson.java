@@ -11,6 +11,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
+/**
+ * Service class that serialize Image and Author class into txt. can be use in HTTP request for client emulation
+ */
 public class ToJson {
     public static void main(String[] args) {
 

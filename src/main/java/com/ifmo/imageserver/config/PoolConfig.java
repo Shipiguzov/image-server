@@ -9,7 +9,7 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 /**
- * Class for define multitreading
+ * Class for define multitreading for receive to DB
  */
 
 @Configuration

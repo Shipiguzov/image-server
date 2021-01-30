@@ -4,6 +4,9 @@ import com.ifmo.imageserver.entity.Author;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
+/**
+ * Interface for work with Author repository. Take necessary information from DB using author specifications.
+ */
 public interface AuthorRepository extends PagingAndSortingRepository<Author, Long>, JpaSpecificationExecutor<Author> {
 
 //    @Query("SELECT c FROM author c WHERE UPPER(c.nickname) = UPPER(:nickname)")

@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Entity class to define Author class in DB
+ * Entity class to define Author class in DB. Nickname is required field.
  */
 @Entity
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -34,7 +34,7 @@ public class Author extends BaseIdentify {
     private String name;
 
     /**
-     * Field of Author nickname
+     * Field of Author nickname. Required field.
      */
     @Getter
     @Column(length = 50, nullable = false)
