@@ -1,6 +1,6 @@
 package com.ifmo.imageserver.controllers;
 
-import com.ifmo.imageserver.FileWork;
+import com.ifmo.imageserver.Utils.FileWork;
 import com.ifmo.imageserver.entity.Author;
 import com.ifmo.imageserver.entity.Image;
 import com.ifmo.imageserver.services.AuthorService;

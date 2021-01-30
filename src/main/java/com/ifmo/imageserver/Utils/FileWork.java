@@ -1,4 +1,4 @@
-package com.ifmo.imageserver;
+package com.ifmo.imageserver.Utils;
 
 import com.ifmo.imageserver.entity.Image;
 
